@@ -26,7 +26,7 @@ export function AnimateMan({
   useEffect(() => {
     actions[animation].fadeIn().play().reset();
     return () => {
-      actions[animation].fadeOut(0.5);
+      actions[animation]?.fadeOut(0.5);
     };
   }, [animation, actions]);
 

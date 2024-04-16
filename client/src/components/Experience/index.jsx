@@ -1,6 +1,10 @@
 import { ContactShadows, Environment, OrbitControls } from "@react-three/drei";
 import { AnimateMan } from "../AnimateMan";
+import { useAtom } from "jotai";
+import { charactersAtom } from "../SocketMamager";
 const Experience = () => {
+  const [characters] = useAtom(charactersAtom);
+  console.log(characters);
   return (
     <>
       <Environment
@@ -10,8 +14,15 @@ const Experience = () => {
       <ambientLight intensity={0.7} />
       <ContactShadows blur={2} />
       <OrbitControls />
-      <AnimateMan />
-      <AnimateMan position-x={2} hairColor="red" topColor="blue" />
+
+      {characters.map((item) => (
+        <AnimateMan
+          key={item.id}
+          position={item.position}
+          topColor={item.topColor}
+          hairColor={item.hairColor}
+        />
+      ))}
     </>
   );
 };
