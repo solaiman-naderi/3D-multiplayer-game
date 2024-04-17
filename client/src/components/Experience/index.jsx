@@ -1,10 +1,19 @@
-import { ContactShadows, Environment, OrbitControls } from "@react-three/drei";
+import {
+  ContactShadows,
+  Environment,
+  OrbitControls,
+  useCursor,
+} from "@react-three/drei";
 import { AnimateMan } from "../AnimateMan";
 import { useAtom } from "jotai";
-import { charactersAtom } from "../SocketMamager";
+import { charactersAtom, socket } from "../SocketMamager";
+import { useState } from "react";
+import { Vector3 } from "three";
 const Experience = () => {
   const [characters] = useAtom(charactersAtom);
-  console.log(characters);
+  const [onFloor, setOnFloor] = useState(false);
+
+  useCursor(onFloor);
   return (
     <>
       <Environment
@@ -15,10 +24,22 @@ const Experience = () => {
       <ContactShadows blur={2} />
       <OrbitControls />
 
+      <mesh
+        rotation-x={-Math.PI / 2}
+        position-y={-0.001}
+        onClick={(e) => socket.emit("move", [e.point.x, 0, e.point.z])}
+        onPointerEnter={() => setOnFloor(true)}
+        onPointerLeave={() => setOnFloor(false)}
+      >
+        <planeGeometry args={[10, 10]} />
+        <meshStandardMaterial color={"#f0f0f0"} />
+      </mesh>
       {characters.map((item) => (
         <AnimateMan
           key={item.id}
-          position={item.position}
+          position={
+            new Vector3(item.position[0], item.position[1], item.position[2])
+          }
           topColor={item.topColor}
           hairColor={item.hairColor}
         />

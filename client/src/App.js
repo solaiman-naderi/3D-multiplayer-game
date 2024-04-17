@@ -5,7 +5,7 @@ function App() {
   return (
     <>
       <SocketManager />
-      <Canvas shadows camera={{ position: [2, 2, 2] }}>
+      <Canvas shadows camera={{ position: [6, 6, 6] }}>
         <Experience />
       </Canvas>
     </>

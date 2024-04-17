@@ -6,8 +6,9 @@ Command: npx gltfjsx@6.2.16 client/public/models/sportMan.glb -o client/src/comp
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useGLTF, useAnimations } from "@react-three/drei";
 import { SkeletonUtils } from "three-stdlib";
-import { useGraph } from "@react-three/fiber";
+import { useFrame, useGraph } from "@react-three/fiber";
 
+const MOVE_SPEED = 0.032;
 export function AnimateMan({
   hairColor = "green",
   topColor = "pink",
@@ -15,6 +16,7 @@ export function AnimateMan({
   ...props
 }) {
   const group = useRef();
+  const position = useMemo(() => props.position, []);
   const { scene, materials, animations } = useGLTF("/models/sportMan.glb");
 
   //for clone model
@@ -24,14 +26,32 @@ export function AnimateMan({
   const { actions } = useAnimations(animations, group);
   const [animation, setAnimation] = useState("CharacterArmature|Run");
   useEffect(() => {
+    console.log(animations);
     actions[animation].fadeIn().play().reset();
     return () => {
       actions[animation]?.fadeOut(0.5);
     };
   }, [animation, actions]);
+  // console.log(group.current.position.distanceTo(props.position));
+  useFrame(() => {
+    // console.log(group.current.position.distanceTo(props.position));
+    if (group.current.position.distanceTo(props.position) > 0.1) {
+      const direction = group.current.position
+        .clone()
+        .sub(props.position)
+        .normalize()
+        .multiplyScalar(MOVE_SPEED);
+
+      group.current.position.sub(direction);
+      group.current.lookAt(props.position);
+      setAnimation("CharacterArmature|Run");
+    } else {
+      setAnimation("CharacterArmature|Idle");
+    }
+  });
 
   return (
-    <group ref={group} {...props} dispose={null}>
+    <group ref={group} {...props} position={position} dispose={null}>
       <group name="Root_Scene">
         <group name="RootNode">
           <group

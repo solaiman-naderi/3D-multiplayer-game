@@ -17,6 +17,7 @@ const generateRandomPosition = () => {
 const generateRandomColor = () => {
   return "#" + Math.floor(Math.random() * 16777215).toString(16);
 };
+
 io.on("connection", (socket) => {
   console.log("user connected");
 
@@ -26,8 +27,15 @@ io.on("connection", (socket) => {
     hairColor: generateRandomColor(),
     topColor: generateRandomColor(),
   });
-
   io.emit("characters", characters);
+
+  socket.on("move", (position) => {
+    const character = characters.find((item) => item.id === socket.id);
+    console.log("SSSSSSSS", character);
+    character.position = position;
+    io.emit("characters", characters);
+  });
+
   socket.emit("hello");
   socket.on("disconnect", () => {
     console.log("user disconnect");
