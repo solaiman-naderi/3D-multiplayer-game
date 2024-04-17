@@ -4,9 +4,13 @@ import { useAtom, atom } from "jotai";
 
 export const socket = io("http://localhost:3001");
 export const charactersAtom = atom([]);
+export const mapAtom = atom(null);
+export const userAtom = atom(null);
 
 const SocketManager = () => {
   const [_characters, setCharacters] = useAtom(charactersAtom);
+  const [_map, setMap] = useAtom(mapAtom);
+  const [_user, setUser] = useAtom(userAtom);
 
   const onConnect = () => {
     console.log("Connect");
@@ -14,8 +18,11 @@ const SocketManager = () => {
   const onDisconnect = () => {
     console.log("disConnect");
   };
-  const onHello = () => {
-    console.log("say hello");
+  const onHello = (value) => {
+    console.log("say hello", value);
+    setMap(value.map);
+    setUser(value.id);
+    setCharacters(value.characters);
   };
 
   const onCharacters = (value) => {

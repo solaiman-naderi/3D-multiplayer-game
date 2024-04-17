@@ -9,9 +9,27 @@ const io = new Server({
 io.listen(3001);
 
 const characters = [];
-
+const items = {
+  desk: {
+    name: "Desk",
+    size: [3, 6],
+  },
+  Chair: {
+    name: "Chair",
+    size: [2, 2],
+  },
+  Lounge: {
+    name: "Lounge",
+    size: [3, 2],
+  },
+};
+const map = {
+  size: [10, 10],
+  gridDivision: 2,
+  items: [{ gridPosition: [4, 4], ...items.Chair }],
+};
 const generateRandomPosition = () => {
-  return [Math.random() * 3, 0, Math.random() * 3];
+  return [Math.random() * map.size[0], 0, Math.random() * map.size[1]];
 };
 
 const generateRandomColor = () => {
@@ -36,7 +54,8 @@ io.on("connection", (socket) => {
     io.emit("characters", characters);
   });
 
-  socket.emit("hello");
+  socket.emit("hello", { map, characters, id: socket.id, items });
+
   socket.on("disconnect", () => {
     console.log("user disconnect");
 
